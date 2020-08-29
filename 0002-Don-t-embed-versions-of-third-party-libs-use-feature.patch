@@ -1,23 +1,23 @@
-From 6875e01ca3e26b430b54c6bbcc40dd1adf35dfe3 Mon Sep 17 00:00:00 2001
+From 85226840dbe9f5547dd2778734415d6283c90258 Mon Sep 17 00:00:00 2001
 From: Mat Booth <mat.booth@redhat.com>
 Date: Fri, 7 Dec 2018 10:17:02 +0000
 Subject: [PATCH 2/3] Don't embed versions of third-party libs, use feature
  requirements instead
 
 ---
- .../org.eclipse.jgit.feature/feature.xml      | 59 +++----------------
- .../feature.xml                               | 16 +----
- .../feature.xml                               | 24 +-------
- .../org.eclipse.jgit.lfs.feature/feature.xml  |  8 +--
- .../org.eclipse.jgit.pgm.feature/feature.xml  | 24 +-------
- .../feature.xml                               | 24 +-------
- 6 files changed, 21 insertions(+), 134 deletions(-)
+ .../org.eclipse.jgit.feature/feature.xml      | 83 +++----------------
+ .../feature.xml                               | 16 +---
+ .../feature.xml                               | 24 +-----
+ .../org.eclipse.jgit.lfs.feature/feature.xml  |  8 +-
+ .../org.eclipse.jgit.pgm.feature/feature.xml  | 24 +-----
+ .../feature.xml                               | 24 +-----
+ 6 files changed, 24 insertions(+), 155 deletions(-)
 
 diff --git a/org.eclipse.jgit.packaging/org.eclipse.jgit.feature/feature.xml b/org.eclipse.jgit.packaging/org.eclipse.jgit.feature/feature.xml
-index ce03e05..f32b48b 100644
+index d213b7b..1783bb1 100644
 --- a/org.eclipse.jgit.packaging/org.eclipse.jgit.feature/feature.xml
 +++ b/org.eclipse.jgit.packaging/org.eclipse.jgit.feature/feature.xml
-@@ -22,6 +22,15 @@
+@@ -22,6 +22,18 @@
        <discovery label="%updateSiteName" url="http://download.eclipse.org/egit/updates"/>
     </url>
  
@@ -28,12 +28,15 @@ index ce03e05..f32b48b 100644
 +      <import plugin="org.apache.commons.compress" />
 +      <import plugin="slf4j.api" />
 +      <import plugin="slf4j.simple" />
++      <import plugin="bcpg" />
++      <import plugin="bcpkix" />
++      <import plugin="bcprov" />
 +   </requires>
 +
     <plugin
           id="org.eclipse.jgit"
           download-size="0"
-@@ -36,54 +45,4 @@
+@@ -36,75 +48,4 @@
           version="0.0.0"
           unpack="false"/>
  
@@ -87,17 +90,38 @@ index ce03e05..f32b48b 100644
 -         version="0.0.0"
 -         unpack="false"/>
 -
+-   <plugin
+-         id="org.bouncycastle.bcpg"
+-         download-size="0"
+-         install-size="0"
+-         version="0.0.0"
+-         unpack="false"/>
+-
+-   <plugin
+-         id="org.bouncycastle.bcpkix"
+-         download-size="0"
+-         install-size="0"
+-         version="0.0.0"
+-         unpack="false"/>
+-
+-   <plugin
+-         id="org.bouncycastle.bcprov"
+-         download-size="0"
+-         install-size="0"
+-         version="0.0.0"
+-         unpack="false"/>
+-
  </feature>
 diff --git a/org.eclipse.jgit.packaging/org.eclipse.jgit.http.apache.feature/feature.xml b/org.eclipse.jgit.packaging/org.eclipse.jgit.http.apache.feature/feature.xml
-index 5780db5..addf7b9 100644
+index f45fb19..1f70cc1 100644
 --- a/org.eclipse.jgit.packaging/org.eclipse.jgit.http.apache.feature/feature.xml
 +++ b/org.eclipse.jgit.packaging/org.eclipse.jgit.http.apache.feature/feature.xml
 @@ -24,6 +24,8 @@
  
     <requires>
-       <import plugin="org.eclipse.jgit"/>
-+      <import plugin="org.apache.httpcomponents.httpclient" />
-+      <import plugin="org.apache.httpcomponents.httpcore" />
+       <import plugin="org.eclipse.jgit" version="5.4.0" match="equivalent"/>
++      <import plugin="org.apache.httpcomponents.httpcore"/>
++      <import plugin="org.apache.httpcomponents.httpclient"/>
     </requires>
  
     <plugin
@@ -121,20 +145,20 @@ index 5780db5..addf7b9 100644
 -
  </feature>
 diff --git a/org.eclipse.jgit.packaging/org.eclipse.jgit.junit.feature/feature.xml b/org.eclipse.jgit.packaging/org.eclipse.jgit.junit.feature/feature.xml
-index d55fd5a..d034cc7 100644
+index 34a0868..d6b8125 100644
 --- a/org.eclipse.jgit.packaging/org.eclipse.jgit.junit.feature/feature.xml
 +++ b/org.eclipse.jgit.packaging/org.eclipse.jgit.junit.feature/feature.xml
-@@ -24,6 +24,9 @@
- 
+@@ -25,6 +25,9 @@
     <requires>
        <import plugin="com.jcraft.jsch"/>
-+      <import plugin="org.apache.commons.logging" />
-+      <import plugin="org.apache.sshd.core" />
-+      <import plugin="org.apache.sshd.sftp" />
+       <import plugin="org.eclipse.jgit" version="5.4.0" match="equivalent"/>
++      <import plugin="org.apache.commons.logging"/>
++      <import plugin="org.apache.sshd.osgi"/>
++      <import plugin="org.apache.sshd.sftp"/>
     </requires>
  
     <plugin
-@@ -54,25 +57,4 @@
+@@ -55,25 +58,4 @@
           version="0.0.0"
           unpack="false"/>
  
@@ -146,7 +170,7 @@ index d55fd5a..d034cc7 100644
 -         unpack="false"/>
 -
 -   <plugin
--         id="org.apache.sshd.core"
+-         id="org.apache.sshd.osgi"
 -         download-size="0"
 -         install-size="0"
 -         version="0.0.0"
@@ -161,14 +185,14 @@ index d55fd5a..d034cc7 100644
 -
  </feature>
 diff --git a/org.eclipse.jgit.packaging/org.eclipse.jgit.lfs.feature/feature.xml b/org.eclipse.jgit.packaging/org.eclipse.jgit.lfs.feature/feature.xml
-index bb916e4..2d1201c 100644
+index 8213753..3c5598b 100644
 --- a/org.eclipse.jgit.packaging/org.eclipse.jgit.lfs.feature/feature.xml
 +++ b/org.eclipse.jgit.packaging/org.eclipse.jgit.lfs.feature/feature.xml
 @@ -24,6 +24,7 @@
  
     <requires>
-       <import plugin="org.eclipse.jgit"/>
-+      <import plugin="com.google.gson" />
+       <import feature="org.eclipse.jgit" version="5.4.0" match="equivalent"/>
++      <import plugin="com.google.gson"/>
     </requires>
  
     <plugin
@@ -185,20 +209,20 @@ index bb916e4..2d1201c 100644
 -
  </feature>
 diff --git a/org.eclipse.jgit.packaging/org.eclipse.jgit.pgm.feature/feature.xml b/org.eclipse.jgit.packaging/org.eclipse.jgit.pgm.feature/feature.xml
-index 43e688e..b9c93e0 100644
+index f6c9cfc..82caaa8 100644
 --- a/org.eclipse.jgit.packaging/org.eclipse.jgit.pgm.feature/feature.xml
 +++ b/org.eclipse.jgit.packaging/org.eclipse.jgit.pgm.feature/feature.xml
-@@ -34,6 +34,9 @@
-       <import feature="org.eclipse.jgit" version="5.2.0" match="equivalent"/>
-       <import feature="org.eclipse.jgit.lfs" version="5.2.0" match="equivalent"/>
-       <import feature="org.eclipse.jgit.ssh.apache" version="5.2.0" match="equivalent"/>
+@@ -38,6 +38,9 @@
+       <import feature="org.eclipse.jgit" version="5.4.0" match="equivalent"/>
+       <import feature="org.eclipse.jgit.lfs" version="5.4.0" match="equivalent"/>
+       <import feature="org.eclipse.jgit.ssh.apache" version="5.4.0" match="equivalent"/>
 +      <import plugin="com.googlecode.javaewah.JavaEWAH" />
 +      <import plugin="org.apache.commons.compress" />
-+      <import plugin="org.kohsuke.args4j" />
++      <import plugin="org.kohsuke.args4j"/>
     </requires>
  
     <plugin
-@@ -50,25 +53,4 @@
+@@ -54,25 +57,4 @@
           version="0.0.0"
           unpack="false"/>
  
@@ -225,16 +249,16 @@ index 43e688e..b9c93e0 100644
 -
  </feature>
 diff --git a/org.eclipse.jgit.packaging/org.eclipse.jgit.ssh.apache.feature/feature.xml b/org.eclipse.jgit.packaging/org.eclipse.jgit.ssh.apache.feature/feature.xml
-index 3e12d53..e05202e 100644
+index f4dded6..9d92cb2 100644
 --- a/org.eclipse.jgit.packaging/org.eclipse.jgit.ssh.apache.feature/feature.xml
 +++ b/org.eclipse.jgit.packaging/org.eclipse.jgit.ssh.apache.feature/feature.xml
 @@ -24,6 +24,9 @@
  
     <requires>
-       <import plugin="org.eclipse.jgit"/>
-+      <import plugin="org.apache.sshd.core" />
-+      <import plugin="org.apache.sshd.sftp" />
-+      <import plugin="net.i2p.crypto.eddsa" />
+       <import feature="org.eclipse.jgit" version="5.4.0" match="equivalent"/>
++      <import plugin="org.apache.sshd.osgi"/>
++      <import plugin="org.apache.sshd.sftp"/>
++      <import plugin="net.i2p.crypto.eddsa"/>
     </requires>
  
     <plugin
@@ -243,7 +267,7 @@ index 3e12d53..e05202e 100644
           unpack="false"/>
  
 -   <plugin
--         id="org.apache.sshd.core"
+-         id="org.apache.sshd.osgi"
 -         download-size="0"
 -         install-size="0"
 -         version="0.0.0"
@@ -265,5 +289,5 @@ index 3e12d53..e05202e 100644
 -
  </feature>
 -- 
-2.19.1
+2.20.1
 
